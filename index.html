@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CaptchaPay | Secure Earning Portal</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        /* --- AD CONTAINER STYLE --- */
+        .ad-slot {
+            background: #ebeef2;
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #94a3b8;
+            overflow: hidden;
+            min-height: 50px;
+        }
+        .top-ad { min-height: 90px; margin-bottom: 20px; }
+        .mid-ad { min-height: 100px; }
+
+        .card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Network Overlay */
+        #networkOverlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 1.6rem; margin: 0; color: var(--primary); font-weight: 800; }
+        
+        .input-group { margin-bottom: 12px; text-align: left; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input:focus { border-color: var(--primary); }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+        .btn-primary { background: var(--primary); color: white; margin-bottom: 10px; }
+        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+
+        .wallet-card {
+            background: linear-gradient(135deg, var(--primary), #818cf8);
+            color: white;
+            padding: 20px;
+            border-radius: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .captcha-area {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 16px;
+            border: 2px dashed #cbd5e1;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        #captchaDisplay {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            color: #334155;
+            text-decoration: line-through;
+            font-style: italic;
+            user-select: none;
+        }
+
+        .withdraw-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .hidden { display: none !important; }
+        .status-msg { font-size: 0.85rem; margin-top: 8px; font-weight: 600; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .offline-anim { animation: pulse 1.5s infinite; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="ad-slot top-ad">
+        ADVERTISEMENT (TOP)
+    </div>
+
+    <div class="card" id="mainCard">
+        
+        <div id="networkOverlay">
+            <div style="font-size: 40px;" class="offline-anim">⚠️</div>
+            <h2 style="color: var(--danger); margin: 10px 0;">Network Offline</h2>
+            <p style="color: var(--muted); margin-bottom: 20px;">Please enable connection to continue.</p>
+        </div>
+
+        <div id="authSection">
+            <div class="header">
+                <h1>Sign Up</h1>
+                <p>Register your details to start earning</p>
+            </div>
+            
+            <div id="regOnlyFields">
+                <div class="input-group"><label>Full Name</label><input type="text" id="regName" placeholder="Enter Name"></div>
+                <div class="input-group"><label>Phone Number</label><input type="tel" id="regPhone" placeholder="Mobile Number"></div>
+                <div class="input-group"><label>UPI ID</label><input type="text" id="regUpi" placeholder="username@upi"></div>
+            </div>
+
+            <div class="input-group"><label>Email Address</label><input type="email" id="authEmail" placeholder="email@example.com"></div>
+            <div class="input-group"><label>Password</label><input type="password" id="authPass" placeholder="••••••••"></div>
+            
+            <button class="btn btn-primary" onclick="handleAuth()" id="mainBtn">Create Account</button>
+            
+            <div style="text-align:center; margin-top:15px; font-size:0.9rem;">
+                <span id="switchText">Already have an account?</span> 
+                <span onclick="toggleAuth()" style="color:var(--primary); cursor:pointer; font-weight:bold;" id="switchAction">Log In</span>
+            </div>
+        </div>
+
+        <div id="dashboard" class="hidden">
+            <div class="wallet-card">
+                <div style="font-size: 0.9rem; opacity: 0.9;">Current Earnings</div>
+                <div style="font-size: 2.6rem; font-weight: 800;">₹<span id="balance">0</span></div>
+            </div>
+
+            <div class="ad-slot mid-ad">
+                ADVERTISEMENT (MIDDLE)
+            </div>
+
+            <div class="captcha-area">
+                <div id="captchaDisplay">LOAD...</div>
+                <div id="bonusTag" style="color:var(--success); font-size:0.75rem; font-weight:bold; margin-top:5px;" class="hidden">✨ BONUS (₹5)</div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="captchaInput" placeholder="Type here..." autocomplete="off">
+                <div id="feedback" class="status-msg"></div>
+            </div>
+
+            <button class="btn btn-primary" onclick="validateCaptcha()">Submit & Earn</button>
+
+            <div class="ad-slot">
+                ADVERTISEMENT (BOTTOM)
+            </div>
+
+            <div class="withdraw-section">
+                <button class="btn btn-outline" onclick="requestWithdrawal()">Withdraw Funds</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // [Pura purana script logic yahan rahega...]
+    let isLoginMode = false;
+    let walletBalance = 0;
+    let currentCaptcha = "";
+    let isBonus = false;
+
+    function checkNetwork() {
+        const overlay = document.getElementById('networkOverlay');
+        overlay.style.display = navigator.onLine ? 'none' : 'flex';
+    }
+    window.addEventListener('online', checkNetwork);
+    window.addEventListener('offline', checkNetwork);
+    checkNetwork();
+
+    function toggleAuth() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('regOnlyFields').classList.toggle('hidden', isLoginMode);
+        document.getElementById('authTitle').innerText = isLoginMode ? "Welcome Back" : "Sign Up";
+        document.getElementById('mainBtn').innerText = isLoginMode ? "Log In" : "Create Account";
+        document.getElementById('switchAction').innerText = isLoginMode ? "Sign Up" : "Log In";
+    }
+
+    function handleAuth() {
+        if (!document.getElementById('authEmail').value || !document.getElementById('authPass').value) {
+            alert("Enter details"); return;
+        }
+        document.getElementById('authSection').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        generateCaptcha();
+    }
+
+    function generateCaptcha() {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        currentCaptcha = "";
+        for (let i = 0; i < 6; i++) { currentCaptcha += chars.charAt(Math.floor(Math.random() * chars.length)); }
+        document.getElementById('captchaDisplay').innerText = currentCaptcha;
+        document.getElementById('captchaInput').value = "";
+        isBonus = Math.random() < 0.2;
+        document.getElementById('bonusTag').classList.toggle('hidden', !isBonus);
+    }
+
+    function validateCaptcha() {
+        const input = document.getElementById('captchaInput').value.toUpperCase();
+        const fb = document.getElementById('feedback');
+        if (input === currentCaptcha) {
+            walletBalance += isBonus ? 5 : 3;
+            document.getElementById('balance').innerText = walletBalance;
+            fb.innerText = "Success!"; fb.style.color = "var(--success)";
+            generateCaptcha();
+        } else {
+            fb.innerText = "Wrong code!"; fb.style.color = "var(--danger)";
+        }
+    }
+
+    function requestWithdrawal() {
+        if (walletBalance >= 200) {
+            alert("Request Sent!"); walletBalance = 0;
+            document.getElementById('balance').innerText = "0";
+        } else { alert("Min limit ₹200"); }
+    }
+
+    document.getElementById('captchaInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') validateCaptcha();
+    });
+</script>
+</body>
+</html>
